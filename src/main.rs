@@ -32,6 +32,9 @@ pub enum Parameter {
         /// Compile source file.      
         #[structopt(parse(from_os_str))]
         source_path: PathBuf,
+        /// Args assigned to move script.      
+        #[structopt(name="args")]
+        args: Vec<String>,
     },
     /// Compile script/module only
     //#[structopt(help = "add files to the staging area")]
@@ -55,7 +58,7 @@ fn main() {
 fn execute(params: Parameter) {
     let cmd: Box<dyn commands::Command> = match &params {
         Parameter::Build{home:_} => commands::build_command(),
-        Parameter::Run{home:_, source_path:_ } => commands::run_command(),
+        Parameter::Run{home:_, source_path:_ , args:_} => commands::run_command(),
         Parameter::Compile{home:_, source_path:_} => commands::compile_command(),
         Parameter::New{home:_,name:_} => commands::new_command(),
         //_ => panic!("unimplement"), 

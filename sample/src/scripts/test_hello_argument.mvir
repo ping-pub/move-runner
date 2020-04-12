@@ -1,0 +1,4 @@
+main(a: u64, b: bool, c: address ) {
+    // /*d: vector<u8>*/
+    return;
+}

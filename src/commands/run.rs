@@ -7,11 +7,16 @@ use crate::{
 
 use bytecode_verifier::verifier::VerifiedModule;
 use glob::glob;
+use libra_types::transaction::{
+    parse_as_transaction_argument,
+    TransactionArgument,
+};
 use move_vm_runtime::MoveVM;
 use move_vm_state::{
     //data_cache::{BlockDataCache, RemoteCache},
     execution_context::SystemExecutionContext,
 };
+use move_vm_types::values::values_impl::Value;
 use vm::{
     errors::VMResult,
     gas_schedule::{
@@ -24,7 +29,14 @@ pub struct RunCommand{}
 
 impl Command for RunCommand{
     fn execute(&self, params: Parameter) {
-        if let Parameter::Run{home, source_path} = params {
+        if let Parameter::Run{home, source_path, args} = params {
+
+            let ta_args: Vec<TransactionArgument> = args.iter().map(|arg| parse_as_transaction_argument(arg).unwrap()).collect();
+            let va_tags = convert_txn_args( &ta_args );
+
+            let u8v = TransactionArgument::U8Vector([1;2].to_vec());
+
+            println!("{:?}", u8v);
                     
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
@@ -62,10 +74,23 @@ impl Command for RunCommand{
             let mut txn_data = TransactionMetadata::default();
             txn_data.sender = cfg.state.address;
 
-            let result: VMResult<()> = move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], vec![]);
+            let result: VMResult<()> = move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
             
             println!("output from move vm: {:?}",  result);
         }
     }
 }
 
+
+
+/// Convert the transaction arguments into move values.
+fn convert_txn_args(args: &[TransactionArgument]) -> Vec<Value> {
+    args.iter()
+        .map(|arg| match arg {
+            TransactionArgument::U64(i) => Value::u64(*i),
+            TransactionArgument::Address(a) => Value::address(*a),
+            TransactionArgument::Bool(b) => Value::bool(*b),
+            TransactionArgument::U8Vector(v) => Value::vector_u8(v.clone()),
+        })
+        .collect()
+}
