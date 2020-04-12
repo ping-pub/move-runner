@@ -29,7 +29,7 @@ pub struct RunCommand{}
 
 impl Command for RunCommand{
     fn execute(&self, params: Parameter) {
-        if let Parameter::Run{home, source_path, args} = params {
+        if let Parameter::Run{home, mut source_path, args} = params {
 
             let ta_args: Vec<TransactionArgument> = args.iter().map(|arg| parse_as_transaction_argument(arg).unwrap()).collect();
             let va_tags = convert_txn_args( &ta_args );
@@ -58,6 +58,10 @@ impl Command for RunCommand{
                 
             };
 
+            if !source_path.exists() {
+                source_path = cfg.script_dir().join(source_path);
+            }
+            println!("Compiling: {:?}", &source_path.display());
             let compiled_script = m_runner.complie_script(&source_path).into_inner();
 
             let mut script: Vec<u8> = vec![];
