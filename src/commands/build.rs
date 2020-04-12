@@ -5,9 +5,7 @@ use crate::{
     Parameter,
 };
 //use bytecode_source_map::source_map::SourceMap;
-use bytecode_verifier::{
-    verifier::{VerifiedScript,VerifiedModule}
-};
+use bytecode_verifier::verifier::VerifiedModule;
 use glob::glob;
 
 pub struct BuildCommand{}
@@ -37,7 +35,6 @@ impl Command for BuildCommand{
             };
 
             println!("\nloading scripts in {}",format!("{}/**/*.mvir", cfg.script_dir().display()));
-
             let sdir = glob(&format!("{}/**/*.mvir", cfg.script_dir().display())).expect("Script Directory is not valid");
             
             for entry in sdir {
@@ -54,8 +51,3 @@ impl Command for BuildCommand{
         }
     }
 }
-
-
-
-
-
