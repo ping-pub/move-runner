@@ -2,8 +2,11 @@ name: Publish
 
 on:
   push:
-    tags:
-      - '*'
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+#    tags:
+#      - '*'
 
 jobs:
   publish:
