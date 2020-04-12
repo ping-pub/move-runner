@@ -1,0 +1,10 @@
+import 0xb987ba702b6d2433489d6af4e9c647df.HelloWorld;
+
+main() {
+    let x: HelloWorld.T;
+    let y: &HelloWorld.T;
+    x = HelloWorld.new(5);
+    y = &x;
+    HelloWorld.t(move(y));
+    return;
+}

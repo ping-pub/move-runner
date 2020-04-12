@@ -1,0 +1,17 @@
+project_name = 'move-project'
+home = 'sample'
+
+[workspace]
+script_dir = 'src/scripts'
+module_dir = 'src/modules'
+target_dir = 'target'
+
+[compile]
+output_source_map = true
+output_move_bytecode = true
+skip_stdlib = false
+custom_stdlib = false
+custom_stdlib_path = 'src/stdlib'
+
+[state]
+address = 'b987ba702b6d2433489d6af4e9c647df'

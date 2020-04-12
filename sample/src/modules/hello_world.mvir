@@ -1,0 +1,16 @@
+module HelloWorld {
+    struct T {g: u64}
+
+    public new(g: u64): Self.T {
+        return T{g: move(g)};
+    }
+
+    public t(this: &Self.T) {
+        let g: &u64;
+        let y: u64;
+        g = &copy(this).g;
+        y = *move(g);
+        _ = move(this);
+        return;
+    }
+}
