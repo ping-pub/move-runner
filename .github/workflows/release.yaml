@@ -16,14 +16,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: mything
-            asset_name: mything-linux-amd64
+            artifact_name: move
+            asset_name: move-linux-amd64
           - os: windows-latest
-            artifact_name: mything.exe
-            asset_name: mything-windows-amd64
+            artifact_name: move.exe
+            asset_name: move-windows-amd64
           - os: macos-latest
-            artifact_name: mything
-            asset_name: mything-macos-amd64
+            artifact_name: move
+            asset_name: move-macos-amd64
 
     steps:
     - uses: hecrj/setup-rust-action@v1
