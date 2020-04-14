@@ -1,12 +1,4 @@
-use crate::{
-    config::Config, 
-    commands::Command,
-    runner::MoveRunner, 
-    Parameter,
-};
-
 use bytecode_verifier::verifier::VerifiedModule;
-use glob::glob;
 use libra_types::transaction::{
     parse_as_transaction_argument,
     TransactionArgument,
@@ -16,6 +8,7 @@ use move_vm_state::{
     //data_cache::{BlockDataCache, RemoteCache},
     execution_context::SystemExecutionContext,
 };
+use move_vm_state::execution_context::TransactionExecutionContext;
 use move_vm_types::values::values_impl::Value;
 use vm::{
     errors::VMResult,
@@ -23,6 +16,15 @@ use vm::{
         CostTable, GasAlgebra,
         GasUnits},
     transaction_metadata::TransactionMetadata,
+};
+
+use glob::glob;
+
+use crate::{
+    commands::Command,
+    config::Config,
+    Parameter,
+    runner::MoveRunner,
 };
 
 pub struct RunCommand{}
@@ -72,11 +74,11 @@ impl Command for RunCommand{
             // Execute script. 
             // create a Move VM and populate it with generated modules
             let move_vm = MoveVM::new();
-            let mut ctx = SystemExecutionContext::new(&m_runner.datastore, GasUnits::new(0));
+            let mut ctx = TransactionExecutionContext::new(GasUnits::new(0), &m_runner.datastore);
             let gas_schedule = CostTable::zero();
 
             let mut txn_data = TransactionMetadata::default();
-            txn_data.sender = cfg.state.address;
+            txn_data.sender = cfg.address();
 
             let result: VMResult<()> = move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
             

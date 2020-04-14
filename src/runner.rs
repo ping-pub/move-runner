@@ -1,50 +1,51 @@
 
 #![allow(unused_imports)]
 
-use move_vm_runtime::{
-    MoveVM,
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
 };
-use move_vm_state::{
-    //data_cache::{BlockDataCache, RemoteCache},
-    execution_context::{ExecutionContext, SystemExecutionContext},
-};
+
 //use bytecode_source_map::source_map::SourceMap;
 use bytecode_verifier::{
     verifier::{VerifiedScript,VerifiedModule}
 };
+use compiler::Compiler;
 use language_e2e_tests::{
     account::{Account, AccountData},
     data_store::FakeDataStore,
-};
-use vm::{
-    errors::VMResult,
-    //access::ModuleAccess,
-    gas_schedule::{
-        //AbstractMemorySize, 
-        CostTable, GasAlgebra,
-        //GasCarrier, 
-        GasUnits},
-    transaction_metadata::TransactionMetadata,
 };
 use libra_types::{
     account_address::AccountAddress,
     account_config,
     transaction::{
-        //Module, 
+        //Module,
         Script,
         TransactionArgument,
     },
-    write_set::{WriteSet, WriteOp},
+    write_set::{WriteOp, WriteSet},
 };
-use compiler::Compiler;
-use std::{
-    path::{Path, PathBuf},
-    fs,
-    io::Write,
+use move_vm_runtime::MoveVM;
+use move_vm_state::{
+    //data_cache::{BlockDataCache, RemoteCache},
+    execution_context::{ExecutionContext, SystemExecutionContext},
 };
-use stdlib::{stdlib_modules, StdLibOptions};
 use move_vm_types::values::Value;
-use include_dir::{include_dir, Dir};
+use stdlib::{stdlib_modules, StdLibOptions};
+use vm::{
+    errors::VMResult,
+    //access::ModuleAccess,
+    gas_schedule::{
+        //AbstractMemorySize,
+        CostTable, GasAlgebra,
+        //GasCarrier,
+        GasUnits},
+    transaction_metadata::TransactionMetadata,
+};
+
+use include_dir::{Dir, include_dir};
+
 use super::config::Config;
 
 pub struct MoveRunner {
@@ -55,7 +56,7 @@ pub struct MoveRunner {
 
 impl MoveRunner {
     pub fn new(cfg: Config) -> Self{
-        println!("\n Compiling with address: 0x{:?}\n", cfg.state.address);
+        println!("\n Compiling with address: 0x{:?}\n", cfg.address());
         MoveRunner{
             cfg,
             stdlib: stdlib_modules(StdLibOptions::Staged).to_vec(),
@@ -65,7 +66,7 @@ impl MoveRunner {
 
     pub fn complie_module(&mut self, path: &Path ) -> VerifiedModule {
         let c = Compiler {
-            address: self.cfg.state.address,
+            address: self.cfg.address(),
             skip_stdlib_deps: false,
             extra_deps: self.stdlib.clone(),
             ..Compiler::default()
@@ -91,7 +92,7 @@ impl MoveRunner {
 
     pub fn complie_script(&self, path: &Path) -> VerifiedScript {
         let c = Compiler {
-            address: self.cfg.state.address,
+            address: self.cfg.address(),
             skip_stdlib_deps: false,
             extra_deps: self.stdlib.clone(),
             ..Compiler::default()

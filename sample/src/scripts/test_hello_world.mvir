@@ -1,4 +1,6 @@
-import 0xb987ba702b6d2433489d6af4e9c647df.HelloWorld;
+// Note: This address should be assigned to the value of address in move.toml
+//       Make sure it starts with '0x';
+import 0xcf1fe4b268ee11f5eb2cfbd7279cd789.HelloWorld;
 
 main() {
     let x: HelloWorld.T;
