@@ -1,4 +1,4 @@
-use crate::{config::Config, commands::Command, Parameter};
+use crate::{commands::Command, config::Config, Parameter};
 
 pub struct NewCommand{}
 
@@ -7,6 +7,7 @@ impl Command for NewCommand{
         if let Parameter::New{home, name} = params {
             let x = Config::new(name, home);
             x.initial();
+            x.genesis();
         }
     }
 }
