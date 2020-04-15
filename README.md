@@ -1,136 +1,41 @@
-# Move-runner
+# Move Runner
 
 [![Build Status][build-image]][build-link]
 ![Apache2][license-image]
 ![MSRV][rustc-image]
 ![Maintenance Status: Experimental][maintenance-image]
 
-Move runner is a dev-tool that manage your Move project and allows you to run Move script/modules without running Libra blockchain.
+Are you looking for a tool manage your Move project?
 
-# Usage
+* Move Runner is a NPM/Cargo like tool that help you to manage your Move project.
+* Move Runner is also a simulator that allows you to run Move script/modules on local.
+* Move Runner make Move developing very easy, No blockchain, No module publish, No pre-compile.
 
-## 1. Download the lastest version. 
+Here is layout of Move project.
 
-Please visit the release page: https://github.com/ping-pub/move-runner/releases
-
-Mac OS:
-
-```
-cd /usr/local/bin
-wget https://github.com/ping-pub/move-runner/releases/download/v0.0.1-RC1/move-macos-amd64
-mv move-macos-amd64 move
-```
-Linux:
-```
-cd /usr/local/bin
-wget https://github.com/ping-pub/move-runner/releases/download/v0.0.1-RC1/move-linux-amd64
-mv move-linux-amd64 move
-```
-Windows:
-```
-C:\windows\explorer.exe https://github.com/ping-pub/move-runner/releases/download/v0.0.1-RC1/move-windows-amd64
-```
-make sure `move` in your path:
-```
-iMac:sample liangping$ move --help
-move 0.0.1
-Move local runner, allows developers to compile and run Move script/modules on local
-
-USAGE:
-    move <SUBCOMMAND>
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-SUBCOMMANDS:
-    build      Build all modules and scripts in src directory
-    compile    Compile script/module only
-    help       Prints this message or the help of the given subcommand(s)
-    new        New a move project
-    run        Compile and run script
-```
-
-
-## 2. Create Move project
-Linux/MacOS:
-
-```
-$ move new
-$ ls
-Move.toml	genesis.blob	src		target
-```
-Windows:
-```
-$ move.exe new
-$ dir
-Move.toml	genesis.blob	src		target
-```
-
-The project layout is :
 ```
 .
 ├── Move.toml
 ├── genesis.blob
 ├── src
-│   ├── modules
-│   └── scripts
+│   ├── modules
+│   └── scripts
 └── target
-
 ```
+* Modules in `src/modules` directory are compiled and loaded/published.
+* Scripts in `src/scripts` directory can be executed directly.
+* All compiled modules/scripts and source code maps will be generated into `target` directory. and you can publish them to your blockchain.
 
-## 3. Build project
+## Tutorials
 
-```
-./move build 
-```
-or add --home 'path to your workspace'
+* [Quick Start](docs/01_quick_start.md)
+* [Integrate With IDE](docs/02_integrate_with_ide.md)
+* [Build Project](docs/03_building_project.md)
+* [Custom Move Project & Transaction](docs/04_custom_your_project.md)
+* [Initial States From genesis](docs/05_initial_states_from_genesis.md)
 
-```
-$ ./move build --home /Users/liangping/workspace/move-runner/sample
-Build { home: "/Users/liangping/workspace/move-runner/sample" }
-loaded config from "/Users/liangping/workspace/move-runner/sample/Move.toml"
 
- Compiling with address: 0xcf1fe4b268ee11f5eb2cfbd7279cd789
-
-loading modules in /Users/liangping/workspace/move-runner/sample/src/modules/**/*.mvir
-Compiling: "/Users/liangping/workspace/move-runner/sample/src/modules/hello_world.mvir"
-
-loading scripts in /Users/liangping/workspace/move-runner/sample/src/scripts/**/*.mvir
-Compiling: "/Users/liangping/workspace/move-runner/sample/src/scripts/test_hello_argument.mvir"
-Compiling: "/Users/liangping/workspace/move-runner/sample/src/scripts/test_hello_world.mvir"
-```
-
-## 4. Execute Move script.
-```
-$ ./move run src/scripts/test_hello_world.mvir 
-Run { home: ".", source_path: "src/scripts/test_hello_world.mvir", args: [] }
-loaded config from "./Move.toml"
-
- Compiling with address: 0xcf1fe4b268ee11f5eb2cfbd7279cd789
-
-loading modules in ./src/modules/**/*.mvir
-Compiling: "src/modules/hello_world.mvir"
-Compiling: "src/scripts/test_hello_world.mvir"
-output from move vm: Ok(())
-
-```
-You can run `./move run test_hello_world.mvir` which will load source_code in script directory.
-
-Execute script with argument:
-```
-$ ./move run test_hello_argument.mvir 1 true 0x0 
-Run { home: ".", source_path: "test_hello_argument.mvir", args: ["1", "true", "0x0"] }
-{U8Vector: 0x0101}
-loaded config from "./Move.toml"
-
- Compiling with address: 0xcf1fe4b268ee11f5eb2cfbd7279cd789
-
-loading modules in ./src/modules/**/*.mvir
-Compiling: "src/modules/hello_world.mvir"
-Compiling: "./src/scripts/test_hello_argument.mvir"
-output from move vm: Ok(())
-```
+## Samples
 
 You can find sample project: https://github.com/ping-pub/move-runner/tree/master/sample
 
