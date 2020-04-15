@@ -4,10 +4,10 @@ use libra_types::transaction::{
     TransactionArgument,
 };
 use move_vm_runtime::MoveVM;
-use move_vm_state::{
-    //data_cache::{BlockDataCache, RemoteCache},
-    execution_context::SystemExecutionContext,
-};
+//use move_vm_state::{
+//    //data_cache::{BlockDataCache, RemoteCache},
+//    execution_context::SystemExecutionContext,
+//};
 use move_vm_state::execution_context::TransactionExecutionContext;
 use move_vm_types::values::values_impl::Value;
 use vm::{
@@ -33,12 +33,9 @@ impl Command for RunCommand{
     fn execute(&self, params: Parameter) {
         if let Parameter::Run{home, mut source_path, args} = params {
 
+            // check if arguments are valid.
             let ta_args: Vec<TransactionArgument> = args.iter().map(|arg| parse_as_transaction_argument(arg).unwrap()).collect();
             let va_tags = convert_txn_args( &ta_args );
-
-            let u8v = TransactionArgument::U8Vector([1;2].to_vec());
-
-            println!("{:?}", u8v);
                     
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
@@ -81,8 +78,12 @@ impl Command for RunCommand{
             txn_data.sender = cfg.address();
 
             let result: VMResult<()> = move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
-            
-            println!("output from move vm: {:?}",  result);
+
+            match result {
+                Ok(_) => println!("The script runs successfully"),
+                Err(e) => println!("Error: {:?}", e),
+            }
+
         }
     }
 }

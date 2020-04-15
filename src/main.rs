@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+
 use structopt::StructOpt;
 
 mod commands;
@@ -45,22 +46,24 @@ pub enum Parameter {
         /// Compile source file.      
         #[structopt(parse(from_os_str))]
         source_path: PathBuf,
+        /// Compile as module.
+        #[structopt(short)]
+        module: bool,
     },
 }
 
 fn main() {
     let params = Parameter::from_args();
-    println!("{:?}", &params);
 
     execute(params);
 }
 
 fn execute(params: Parameter) {
     let cmd: Box<dyn commands::Command> = match &params {
-        Parameter::Build{home:_} => commands::build_command(),
-        Parameter::Run{home:_, source_path:_ , args:_} => commands::run_command(),
-        Parameter::Compile{home:_, source_path:_} => commands::compile_command(),
-        Parameter::New{home:_,name:_} => commands::new_command(),
+        Parameter::Build { .. } => commands::build_command(),
+        Parameter::Run { .. } => commands::run_command(),
+        Parameter::Compile { .. } => commands::compile_command(),
+        Parameter::New { .. } => commands::new_command(),
         //_ => panic!("unimplement"), 
     };
     cmd.execute(params);

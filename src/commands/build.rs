@@ -1,12 +1,13 @@
-use crate::{
-    config::Config, 
-    commands::Command,
-    runner::MoveRunner, 
-    Parameter,
-};
-//use bytecode_source_map::source_map::SourceMap;
 use bytecode_verifier::verifier::VerifiedModule;
+
 use glob::glob;
+
+use crate::{
+    commands::Command,
+    config::Config,
+    Parameter,
+    runner::MoveRunner,
+};
 
 pub struct BuildCommand{}
 
@@ -48,6 +49,7 @@ impl Command for BuildCommand{
                     }
                 }
             };
+            println!("Build finished.");
         }
     }
 }
