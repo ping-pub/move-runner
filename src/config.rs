@@ -34,7 +34,8 @@ impl Config {
     }
 
     pub fn load_config(home: PathBuf) -> Self {
-        println!("loaded config from {:?}", &home.join(DEFAULT_CONFIG_FILE));
+        crate::println_color("Loading");
+        print!("config from {:?}\n", &home.join(DEFAULT_CONFIG_FILE));
         let content = fs::read_to_string(&home.join(DEFAULT_CONFIG_FILE))
             .expect("Failed to loaded config files");
         let mut cfg: Self = toml::from_str(&content).expect("Failed to loaded Move.toml");

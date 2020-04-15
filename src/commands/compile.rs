@@ -1,5 +1,5 @@
 use crate::{commands::Command, config::Config, Parameter,
-            runner::MoveRunner, };
+            println_color, runner::MoveRunner};
 
 pub struct CompileCommand{}
 
@@ -13,13 +13,15 @@ impl Command for CompileCommand{
                 if !source_path.exists() {
                     source_path = cfg.module_dir().join(source_path);
                 }
-                println!("Compiling: {:?}", &source_path.display());
+                println_color("Compiling");
+                print!("{:?}\n", &source_path.display());
                 m_runner.complie_module(&source_path);
             } else {
                 if !source_path.exists() {
                     source_path = cfg.script_dir().join(source_path);
                 }
-                println!("Compiling: {:?}", &source_path.display());
+                println_color("Compiling");
+                print!("{:?}\n", &source_path.display());
                 m_runner.complie_script(&source_path);
             }
 

@@ -8,7 +8,7 @@ use move_vm_runtime::MoveVM;
 //    //data_cache::{BlockDataCache, RemoteCache},
 //    execution_context::SystemExecutionContext,
 //};
-use move_vm_state::execution_context::TransactionExecutionContext;
+use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
 use move_vm_types::values::values_impl::Value;
 use vm::{
     errors::VMResult,
@@ -24,6 +24,7 @@ use crate::{
     commands::Command,
     config::Config,
     Parameter,
+    println_color,
     runner::MoveRunner,
 };
 
@@ -39,13 +40,14 @@ impl Command for RunCommand{
                     
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
-            
-            println!("loading modules in {}",format!("{}/**/*.mvir", &cfg.module_dir().display()));
+            println_color("Loading");
+            print!("modules from {}\n", &cfg.module_dir().display());
             let mdir = glob(&format!("{}/**/*.mvir", &cfg.module_dir().display())).expect("Module directory is not valid.");
             for entry in mdir {
                 match entry {
                     Ok(path) => {
-                        println!("Compiling: {:?}", &path.display());
+                        println_color("Compiling");
+                        print!("{:?}\n", &path.display());
                         let m: VerifiedModule = m_runner.complie_module(&path);
                         let cm = &m.as_inner();
                         m_runner.datastore.add_module(&cm.self_id(), cm);
@@ -60,8 +62,13 @@ impl Command for RunCommand{
             if !source_path.exists() {
                 source_path = cfg.script_dir().join(source_path);
             }
-            println!("Compiling: {:?}", &source_path.display());
+
+            println_color("Compiling");
+            print!("{:?}\n", &source_path.display());
             let compiled_script = m_runner.complie_script(&source_path).into_inner();
+
+            println_color("Running");
+            print!("Script: {:?} Args: {:?}\n", &source_path.file_name().unwrap(), args);
 
             let mut script: Vec<u8> = vec![];
             compiled_script.as_inner()
@@ -71,7 +78,7 @@ impl Command for RunCommand{
             // Execute script. 
             // create a Move VM and populate it with generated modules
             let move_vm = MoveVM::new();
-            let mut ctx = TransactionExecutionContext::new(GasUnits::new(0), &m_runner.datastore);
+            let mut ctx = TransactionExecutionContext::new(GasUnits::new(1000), &m_runner.datastore);
             let gas_schedule = CostTable::zero();
 
             let mut txn_data = TransactionMetadata::default();
@@ -80,7 +87,16 @@ impl Command for RunCommand{
             let result: VMResult<()> = move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
 
             match result {
-                Ok(_) => println!("The script runs successfully"),
+                Ok(_) => {
+                    let ws = ctx.make_write_set().unwrap();
+                    println_color("Output");
+                    print!("{} WriteSet was generated\n", &ws.len());
+
+                    for (a, wo) in ws {
+                        println!("AccessPath:{}, {:?}", a, wo);
+                    }
+                    println!("The script runs successfully")
+                },
                 Err(e) => println!("Error: {:?}", e),
             }
 

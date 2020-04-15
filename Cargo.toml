@@ -29,6 +29,7 @@ structopt = "0.3.13"
 toml = "0.4.5"
 rand = "0.6.5"
 glob = "0.3.0"
+termcolor = "1.1.0"
 
 libra-config = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 stdlib = { git="https://github.com/libra/libra.git", version = "0.1.0" }
