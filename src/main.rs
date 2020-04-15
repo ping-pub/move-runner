@@ -39,8 +39,7 @@ pub enum Parameter {
         #[structopt(name="args")]
         args: Vec<String>,
     },
-    /// Compile script/module only
-    //#[structopt(help = "add files to the staging area")]
+    /// Compile single script/module only, use 'move build' if your source code has dependency.
     Compile {  
         /// Specify the home directory for new project.
         #[structopt(short, long, default_value = ".", parse(from_os_str))]
