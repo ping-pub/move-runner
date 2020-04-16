@@ -1,5 +1,5 @@
 # Move Runner
-
+[![version](https://img.shields.io/github/tag/ping-pub/move-runner.svg)](https://github.com/ping-pub/move-runner/releases/latest)
 [![Build Status][build-image]][build-link]
 ![Apache2][license-image]
 ![MSRV][rustc-image]
