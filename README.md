@@ -64,4 +64,4 @@ without any additional terms or conditions.
 [license-image]:https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-link]: https://github.com/ping-pub/move-runner/blob/master/LICENSE
 [rustc-image]: https://img.shields.io/badge/rustc-1.39+-blue.svg
-[maintenance-image]: https://img.shields.io/badge/maintenance-experimental-blue.svg
+[maintenance-image]: https://img.shields.io/badge/maintenance-Ping%20Pub-blue.svg
