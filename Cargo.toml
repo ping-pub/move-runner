@@ -1,6 +1,6 @@
 [package]
 name = "move-runner"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Ping <18786721@qq.com>"]
 edition = "2018"
 description = "A Move VM simulator which allows developers to compile and run Move script/module on local computer. "
