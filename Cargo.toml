@@ -43,7 +43,10 @@ functional-tests = { git = "https://github.com/libra/libra.git", version = "0.1.
 ir-to-bytecode = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 libra-types = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 libra-crypto = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
+libra-vm = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 move-ir-types = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 compiler = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 move-vm-types= { git = "https://github.com/libra/libra.git", version = "0.1.0" }
 bytecode-source-map = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
+vm-genesis = { git = "https://github.com/libra/libra.git", version = "0.1.0" }
+generate-key = { git = "https://github.com/libra/libra.git", version = "0.1.0" }

@@ -20,5 +20,5 @@ keypair_public_key = '98a29c183b9f8b3dc5574eedfad67e8a182fdedd39e6fedda7b45e6efa
 sequence_number = 0
 
 [storage]
-load_state_from_genesis = false
+load_state_from_genesis = true
 save_writeset_to_genesis = false

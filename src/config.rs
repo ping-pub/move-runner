@@ -1,15 +1,18 @@
 use std::{fs, path::PathBuf};
 
-use libra_crypto::{ed25519::{Ed25519PrivateKey, Ed25519PublicKey}, traits::*, Uniform};
-use libra_types::account_address::AccountAddress;
-use rand::{
-    Rng,
-    rngs::{OsRng, StdRng}, SeedableRng,
+use libra_config::config::{ExecutionConfig, RootPath};
+use libra_crypto::{
+    ed25519::{Ed25519PrivateKey, Ed25519PublicKey},
+    traits::*,
 };
+use libra_crypto::hash::CryptoHash;
+use libra_types::{account_address::AccountAddress, transaction::Transaction};
+use libra_types::transaction::{RawTransaction, SignedTransaction};
 use serde::{Deserialize, Serialize};
+use stdlib::StdLibOptions;
+use vm_genesis;
 
 const DEFAULT_CONFIG_FILE: &str = "Move.toml";
-const GENESIS_BLOB: &str = "genesis.blob";
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -39,7 +42,7 @@ impl Config {
         let content = fs::read_to_string(&home.join(DEFAULT_CONFIG_FILE))
             .expect("Failed to loaded config files");
         let mut cfg: Self = toml::from_str(&content).expect("Failed to loaded Move.toml");
-        cfg.home = home;  // replace home with the value of argument
+        cfg.home = home; // replace home with the value of argument
         cfg
     }
 
@@ -54,7 +57,17 @@ impl Config {
     }
 
     pub fn genesis(&self) {
-        fs::write(&self.home.join(GENESIS_BLOB), []).expect("Failed to create genesis.blob");
+        let change_set = vm_genesis::generate_genesis_change_set_for_testing(StdLibOptions::Staged);
+        let mut cfg = ExecutionConfig::default();
+
+        let priv_key = &Ed25519PrivateKey::from_encoded_string(&self.tx.keypair_private_key).unwrap();
+        let raw_txs = RawTransaction::new_change_set(self.address(), self.tx.sequence_number, change_set);
+        let signature = priv_key.sign_message(&raw_txs.hash());
+        let signed_tx = SignedTransaction::new(raw_txs, self.tx.keypair_public_key.clone(), signature);
+
+        cfg.genesis = Some(Transaction::UserTransaction(signed_tx));
+        cfg.save(&RootPath::new(&self.home))
+            .expect("genesis.blob was not created");
     }
 
     pub fn module_dir(&self) -> PathBuf {
@@ -142,10 +155,7 @@ pub struct Storage {
 
 /// Generate an Ed25519 key pair.
 fn generate_keypair() -> (Ed25519PrivateKey, Ed25519PublicKey) {
-    let mut seed_rng = OsRng::new().expect("can't access OsRng");
-    let seed: [u8; 32] = seed_rng.gen();
-    let mut stdrng = StdRng::from_seed(seed);
-    let private_key = Ed25519PrivateKey::generate(&mut stdrng);
+    let private_key = generate_key::generate_key();
     let public_key = private_key.public_key();
     (private_key, public_key)
 }
@@ -153,7 +163,9 @@ fn generate_keypair() -> (Ed25519PrivateKey, Ed25519PublicKey) {
 #[test]
 fn test_generate_keypair() {
     let (private_key, public_key) = generate_keypair();
-    println!("{}=>{}", private_key.to_encoded_string().unwrap(), public_key);
+    println!(
+        "{}=>{}",
+        private_key.to_encoded_string().unwrap(),
+        public_key
+    );
 }
-
-
