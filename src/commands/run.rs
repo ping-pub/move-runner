@@ -3,12 +3,15 @@ use std::path::PathBuf;
 use bytecode_verifier::verifier::VerifiedModule;
 use libra_config::config::{ExecutionConfig, RootPath};
 use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument, TransactionPayload};
+use move_core_types::{
+    gas_schedule::{GasAlgebra, GasUnits},
+};
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
 use move_vm_types::values::values_impl::Value;
 use vm::{
     errors::VMResult,
-    gas_schedule::{CostTable, GasAlgebra, GasUnits},
+    gas_schedule,
     transaction_metadata::TransactionMetadata,
 };
 
@@ -82,8 +85,8 @@ impl Command for RunCommand {
             // create a Move VM and populate it with generated modules
             let move_vm = MoveVM::new();
             let mut ctx =
-                TransactionExecutionContext::new(GasUnits::new(1000), &m_runner.datastore);
-            let gas_schedule = CostTable::zero();
+                TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
+            let gas_schedule = gas_schedule::zero_cost_schedule();
 
             let mut txn_data = TransactionMetadata::default();
             txn_data.sender = cfg.address();
