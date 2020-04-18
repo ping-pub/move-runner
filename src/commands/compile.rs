@@ -1,11 +1,15 @@
-use crate::{commands::Command, config::Config, Parameter,
-            println_color, runner::MoveRunner};
+use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
 
-pub struct CompileCommand{}
+pub struct CompileCommand {}
 
-impl Command for CompileCommand{
+impl Command for CompileCommand {
     fn execute(&self, params: Parameter) {
-        if let Parameter::Compile { home, mut source_path, module } = params {
+        if let Parameter::Compile {
+            home,
+            mut source_path,
+            module,
+        } = params
+        {
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
 
@@ -29,6 +33,3 @@ impl Command for CompileCommand{
         }
     }
 }
-
-
-

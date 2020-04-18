@@ -5,7 +5,7 @@
 ![MSRV][rustc-image]
 ![Maintenance Status: Experimental][maintenance-image]
 
-Are you looking for a tool manage your Move project?
+Are you looking for a tool to manage your Move project?
 
 * Move Runner is a NPM/Cargo like tool that help you to manage your Move project.
 * Move Runner is also a simulator that allows you to run Move script/modules on local.

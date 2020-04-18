@@ -36,12 +36,11 @@ pub enum Parameter {
         #[structopt(parse(from_os_str))]
         source_path: PathBuf,
         /// Args assigned to move script.      
-        #[structopt(name="args")]
+        #[structopt(name = "args")]
         args: Vec<String>,
     },
-    /// Compile script/module only
-    //#[structopt(help = "add files to the staging area")]
-    Compile {  
+    /// Compile single script/module only, use 'move build' if your source code has dependency.
+    Compile {
         /// Specify the home directory for new project.
         #[structopt(short, long, default_value = ".", parse(from_os_str))]
         home: PathBuf,
@@ -73,7 +72,7 @@ fn execute(params: Parameter) {
         Parameter::Run { .. } => commands::run_command(),
         Parameter::Compile { .. } => commands::compile_command(),
         Parameter::New { .. } => commands::new_command(),
-        //_ => panic!("unimplement"), 
+        //_ => panic!("unimplement"),
     };
     cmd.execute(params);
 }
@@ -82,7 +81,3 @@ fn execute(params: Parameter) {
 fn test_println() {
     println_color("Grean");
 }
-
-
-
-
