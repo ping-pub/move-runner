@@ -34,7 +34,7 @@ impl Command for RunCommand {
                 .iter()
                 .map(|arg| parse_as_transaction_argument(arg).unwrap())
                 .collect();
-            let va_tags = convert_txn_args(&ta_args);
+            let va_args = convert_txn_args(&ta_args);
 
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
@@ -92,7 +92,7 @@ impl Command for RunCommand {
             txn_data.sender = cfg.address();
 
             let result: VMResult<()> =
-                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
+                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_args);
 
             match result {
                 Ok(_) => {
