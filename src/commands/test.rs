@@ -1,9 +1,12 @@
+use std::io::Write;
+
 use bytecode_verifier::verifier::VerifiedModule;
 use move_core_types::{
     gas_schedule::{GasAlgebra, GasUnits},
 };
 use move_vm_runtime::MoveVM;
-use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
+use move_vm_state::execution_context::TransactionExecutionContext;
+use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 use vm::{
     errors::VMResult,
     gas_schedule,
@@ -62,7 +65,7 @@ impl Command for TestCommand {
 
                         println_color("Running");
                         print!(
-                            "Script: {:?} Args: []\n",
+                            "Script: {:?} Args: []",
                             &path.file_name().unwrap()
                         );
 
@@ -86,17 +89,8 @@ impl Command for TestCommand {
                             move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], vec![]);
 
                         match result {
-                            Ok(_) => {
-                                let ws = ctx.make_write_set().unwrap();
-                                println_color("Output");
-                                print!("{} WriteSet was generated\n", &ws.len());
-
-                                for (a, wo) in ws {
-                                    println!("AccessPath:{}, {:?}", a, wo);
-                                }
-                                println!("The script runs successfully")
-                            }
-                            Err(e) => println!("Error: {:?}", e),
+                            Ok(_) => status_print("OK\n", Color::Green),
+                            Err(_e) => status_print("Failed\n", Color::Red),
                         }
                     },
                     Err(_) => {
@@ -108,3 +102,9 @@ impl Command for TestCommand {
     }
 }
 
+fn status_print(content: &'static str, color: Color) {
+    let mut stdout = StandardStream::stdout(ColorChoice::Always);
+    let _ = stdout.set_color(ColorSpec::new().set_fg(Some(color)).set_bold(true));
+    let _ = write!(&mut stdout, "{:>12} ", content);
+    let _ = stdout.reset();
+}
