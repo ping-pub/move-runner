@@ -1,15 +1,11 @@
 use bytecode_verifier::verifier::VerifiedModule;
 use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument};
-use move_core_types::{
-    gas_schedule::{GasAlgebra, GasUnits},
-};
+use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
-use vm::{
-    errors::VMResult,
-    gas_schedule,
-    transaction_metadata::TransactionMetadata,
-};
+use move_vm_types::gas_schedule::zero_cost_schedule;
+use move_vm_types::transaction_metadata::TransactionMetadata;
+use vm::errors::VMResult;
 
 use glob::glob;
 
@@ -83,7 +79,7 @@ impl Command for RunCommand {
             let move_vm = MoveVM::new();
             let mut ctx =
                 TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
-            let gas_schedule = gas_schedule::zero_cost_schedule();
+            let gas_schedule = zero_cost_schedule();
 
             let mut txn_data = TransactionMetadata::default();
             txn_data.sender = cfg.address();

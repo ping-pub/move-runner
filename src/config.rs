@@ -6,7 +6,7 @@ use libra_crypto::{
     traits::*,
 };
 use libra_crypto::hash::CryptoHash;
-use libra_types::{account_address::AccountAddress, transaction::Transaction};
+use libra_types::{account_address::AccountAddress, account_address::from_public_key, transaction::Transaction};
 use libra_types::transaction::{RawTransaction, SignedTransaction};
 use serde::{Deserialize, Serialize};
 use stdlib::StdLibOptions;
@@ -146,7 +146,7 @@ impl Default for DevTransaction {
     fn default() -> Self {
         let (private_key, keypair_public_key) = generate_keypair();
         Self {
-            address: AccountAddress::from_public_key(&keypair_public_key),
+            address: from_public_key(&keypair_public_key),
             sequence_number: 0,
             keypair_private_key: private_key.to_encoded_string().unwrap(),
             keypair_public_key,
