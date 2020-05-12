@@ -6,11 +6,11 @@ use move_core_types::{
 };
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::TransactionExecutionContext;
+use move_vm_types::gas_schedule::zero_cost_schedule;
+use move_vm_types::transaction_metadata::TransactionMetadata;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 use vm::{
     errors::VMResult,
-    gas_schedule,
-    transaction_metadata::TransactionMetadata,
 };
 
 use glob::glob;
@@ -80,7 +80,7 @@ impl Command for TestCommand {
                         let move_vm = MoveVM::new();
                         let mut ctx =
                             TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
-                        let gas_schedule = gas_schedule::zero_cost_schedule();
+                        let gas_schedule = zero_cost_schedule();
 
                         let mut txn_data = TransactionMetadata::default();
                         txn_data.sender = cfg.address();
