@@ -1,5 +1,6 @@
 // Note: This address should be assigned to the value of address in move.toml
 //       Make sure it starts with '0x';
+
 import 0x3cf4cc0c7dcf04ff846484288a4f40ef.HelloWorld;
 
 main() {

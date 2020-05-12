@@ -6,7 +6,7 @@ use libra_crypto::{
     traits::*,
 };
 use libra_crypto::hash::CryptoHash;
-use libra_types::{account_address::AccountAddress, transaction::Transaction};
+use libra_types::{account_address::AccountAddress, account_address::from_public_key, transaction::Transaction};
 use libra_types::transaction::{RawTransaction, SignedTransaction};
 use serde::{Deserialize, Serialize};
 use stdlib::StdLibOptions;
@@ -51,6 +51,7 @@ impl Config {
         fs::create_dir_all(&self.module_dir()).expect("Failed to create module directory");
         fs::create_dir_all(&self.script_dir()).expect("Failed to create script directory");
         fs::create_dir_all(&self.target_dir()).expect("Failed to create target directory");
+        fs::create_dir_all(&self.test_dir()).expect("Failed to create test directory");
 
         let cfg = toml::to_string_pretty(&self).unwrap();
         fs::write(&self.home.join(DEFAULT_CONFIG_FILE), cfg).expect("Failed to create Move.toml");
@@ -78,6 +79,10 @@ impl Config {
         self.home.join(&self.workspace.script_dir)
     }
 
+    pub fn test_dir(&self) -> PathBuf {
+        self.home.join(&self.workspace.test_dir)
+    }
+
     pub fn target_dir(&self) -> PathBuf {
         self.home.join(&self.workspace.target_dir)
     }
@@ -93,6 +98,7 @@ pub struct Workspace {
     pub script_dir: PathBuf,
     pub module_dir: PathBuf,
     pub target_dir: PathBuf,
+    pub test_dir: PathBuf,
 }
 
 impl Default for Workspace {
@@ -101,6 +107,7 @@ impl Default for Workspace {
             script_dir: PathBuf::from("src/scripts"),
             module_dir: PathBuf::from("src/modules"),
             target_dir: PathBuf::from("target"),
+            test_dir: PathBuf::from("test"),
         }
     }
 }
@@ -139,7 +146,7 @@ impl Default for DevTransaction {
     fn default() -> Self {
         let (private_key, keypair_public_key) = generate_keypair();
         Self {
-            address: AccountAddress::from_public_key(&keypair_public_key),
+            address: from_public_key(&keypair_public_key),
             sequence_number: 0,
             keypair_private_key: private_key.to_encoded_string().unwrap(),
             keypair_public_key,

@@ -51,6 +51,12 @@ pub enum Parameter {
         #[structopt(short)]
         module: bool,
     },
+    /// Compile and run script
+    Test {
+        /// Specify the home directory for new project.
+        #[structopt(short, long, default_value = ".", parse(from_os_str))]
+        home: PathBuf,
+    },
 }
 
 fn main() {
@@ -72,6 +78,7 @@ fn execute(params: Parameter) {
         Parameter::Run { .. } => commands::run_command(),
         Parameter::Compile { .. } => commands::compile_command(),
         Parameter::New { .. } => commands::new_command(),
+        Parameter::Test { .. } => commands::test_command(),
         //_ => panic!("unimplement"),
     };
     cmd.execute(params);

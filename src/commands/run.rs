@@ -1,23 +1,16 @@
-use std::path::PathBuf;
-
 use bytecode_verifier::verifier::VerifiedModule;
-use libra_config::config::{ExecutionConfig, RootPath};
-use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument, TransactionPayload};
-use move_core_types::{
-    gas_schedule::{GasAlgebra, GasUnits},
-};
+use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument};
+use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
-use move_vm_types::values::values_impl::Value;
-use vm::{
-    errors::VMResult,
-    gas_schedule,
-    transaction_metadata::TransactionMetadata,
-};
+use move_vm_types::gas_schedule::zero_cost_schedule;
+use move_vm_types::transaction_metadata::TransactionMetadata;
+use vm::errors::VMResult;
 
 use glob::glob;
 
 use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
+use crate::commands::{convert_txn_args, load_genesis};
 
 pub struct RunCommand {}
 
@@ -34,7 +27,7 @@ impl Command for RunCommand {
                 .iter()
                 .map(|arg| parse_as_transaction_argument(arg).unwrap())
                 .collect();
-            let va_tags = convert_txn_args(&ta_args);
+            let va_args = convert_txn_args(&ta_args);
 
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
@@ -86,13 +79,13 @@ impl Command for RunCommand {
             let move_vm = MoveVM::new();
             let mut ctx =
                 TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
-            let gas_schedule = gas_schedule::zero_cost_schedule();
+            let gas_schedule = zero_cost_schedule();
 
             let mut txn_data = TransactionMetadata::default();
             txn_data.sender = cfg.address();
 
             let result: VMResult<()> =
-                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_tags);
+                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_args);
 
             match result {
                 Ok(_) => {
@@ -111,40 +104,3 @@ impl Command for RunCommand {
     }
 }
 
-fn load_genesis(cfg: &Config, runner: &mut MoveRunner) {
-    println_color("Loading");
-    print!("'genesis.blob' from {:?}\n", &cfg.home);
-    let mut exec_cfg = ExecutionConfig::default();
-    exec_cfg.genesis_file_location = PathBuf::from("genesis.blob");
-    exec_cfg.load(&RootPath::new(&cfg.home)).expect("'genesis.blob' is invalid:");
-
-    let tx = exec_cfg.genesis.unwrap();
-    let gen_payload = tx.as_signed_user_txn().unwrap().payload();
-    match &gen_payload {
-        TransactionPayload::WriteSet(cs) => {
-            runner.datastore.add_write_set(cs.write_set());
-            //print_all(cs);
-        },
-        TransactionPayload::Module(m) => {
-            println!("module:{:?}", m)
-        },
-        TransactionPayload::Script(s) => {
-            println!("script:{:?}", s)
-        },
-        TransactionPayload::Program => {
-            println!("unimplemented")
-        },
-    }
-}
-
-/// Convert the transaction arguments into move values.
-fn convert_txn_args(args: &[TransactionArgument]) -> Vec<Value> {
-    args.iter()
-        .map(|arg| match arg {
-            TransactionArgument::U64(i) => Value::u64(*i),
-            TransactionArgument::Address(a) => Value::address(*a),
-            TransactionArgument::Bool(b) => Value::bool(*b),
-            TransactionArgument::U8Vector(v) => Value::vector_u8(v.clone()),
-        })
-        .collect()
-}
