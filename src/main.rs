@@ -35,6 +35,9 @@ pub enum Parameter {
         /// Compile source file.      
         #[structopt(parse(from_os_str))]
         source_path: PathBuf,
+        /// Type_arguments to run script, ie: U64, Address
+        #[structopt(short, long)]
+        type_args: Vec<String>,
         /// Args assigned to move script.      
         #[structopt(name = "args")]
         args: Vec<String>,

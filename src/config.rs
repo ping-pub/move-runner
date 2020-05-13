@@ -6,7 +6,9 @@ use libra_crypto::{
     traits::*,
 };
 use libra_crypto::hash::CryptoHash;
-use libra_types::{account_address::AccountAddress, account_address::from_public_key, transaction::Transaction};
+use libra_types::{
+    account_address::AccountAddress, account_address::from_public_key, transaction::Transaction,
+};
 use libra_types::transaction::{RawTransaction, SignedTransaction};
 use serde::{Deserialize, Serialize};
 use stdlib::StdLibOptions;
@@ -61,10 +63,13 @@ impl Config {
         let change_set = vm_genesis::generate_genesis_change_set_for_testing(StdLibOptions::Staged);
         let mut cfg = ExecutionConfig::default();
 
-        let priv_key = &Ed25519PrivateKey::from_encoded_string(&self.tx.keypair_private_key).unwrap();
-        let raw_txs = RawTransaction::new_change_set(self.address(), self.tx.sequence_number, change_set);
+        let priv_key =
+            &Ed25519PrivateKey::from_encoded_string(&self.tx.keypair_private_key).unwrap();
+        let raw_txs =
+            RawTransaction::new_change_set(self.address(), self.tx.sequence_number, change_set);
         let signature = priv_key.sign_message(&raw_txs.hash());
-        let signed_tx = SignedTransaction::new(raw_txs, self.tx.keypair_public_key.clone(), signature);
+        let signed_tx =
+            SignedTransaction::new(raw_txs, self.tx.keypair_public_key.clone(), signature);
 
         cfg.genesis = Some(Transaction::UserTransaction(signed_tx));
         cfg.save(&RootPath::new(&self.home))

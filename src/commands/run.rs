@@ -1,6 +1,7 @@
 use bytecode_verifier::verifier::VerifiedModule;
 use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument};
 use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
+use move_core_types::language_storage::TypeTag;
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
 use move_vm_types::gas_schedule::zero_cost_schedule;
@@ -11,6 +12,7 @@ use glob::glob;
 
 use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
 use crate::commands::{convert_txn_args, load_genesis};
+use crate::commands::type_parser::parse_type_tags;
 
 pub struct RunCommand {}
 
@@ -19,9 +21,12 @@ impl Command for RunCommand {
         if let Parameter::Run {
             home,
             mut source_path,
+            type_args,
             args,
         } = params
         {
+            let ty_args: Vec<TypeTag> = parse_type_tags(&type_args.join(",")).unwrap();
+
             // check if arguments are valid.
             let ta_args: Vec<TransactionArgument> = args
                 .iter()
@@ -60,11 +65,11 @@ impl Command for RunCommand {
 
             load_genesis(&cfg, &mut m_runner);
 
-
             println_color("Running");
             print!(
-                "Script: {:?} Args: {:?}\n",
+                "Script: {:?} Type Args:{:?}, Args: {:?}\n",
                 &source_path.file_name().unwrap(),
+                &ty_args,
                 args
             );
 
@@ -77,15 +82,14 @@ impl Command for RunCommand {
             // Execute script.
             // create a Move VM and populate it with generated modules
             let move_vm = MoveVM::new();
-            let mut ctx =
-                TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
+            let mut ctx = TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
             let gas_schedule = zero_cost_schedule();
 
             let mut txn_data = TransactionMetadata::default();
             txn_data.sender = cfg.address();
 
             let result: VMResult<()> =
-                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], va_args);
+                move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, ty_args, va_args);
 
             match result {
                 Ok(_) => {
@@ -103,4 +107,3 @@ impl Command for RunCommand {
         }
     }
 }
-
