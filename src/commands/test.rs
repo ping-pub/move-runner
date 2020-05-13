@@ -1,17 +1,13 @@
 use std::io::Write;
 
 use bytecode_verifier::verifier::VerifiedModule;
-use move_core_types::{
-    gas_schedule::{GasAlgebra, GasUnits},
-};
+use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::TransactionExecutionContext;
 use move_vm_types::gas_schedule::zero_cost_schedule;
 use move_vm_types::transaction_metadata::TransactionMetadata;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
-use vm::{
-    errors::VMResult,
-};
+use vm::errors::VMResult;
 
 use glob::glob;
 
@@ -22,10 +18,7 @@ pub struct TestCommand {}
 
 impl Command for TestCommand {
     fn execute(&self, params: Parameter) {
-        if let Parameter::Test {
-            home,
-        } = params
-        {
+        if let Parameter::Test { home } = params {
             // initialize
             let cfg = Config::load_config(home);
             let mut m_runner = MoveRunner::new(cfg.clone());
@@ -64,10 +57,7 @@ impl Command for TestCommand {
                         let compiled_script = m_runner.complie_script(&path).into_inner();
 
                         println_color("Running");
-                        print!(
-                            "Script: {:?} Args: []",
-                            &path.file_name().unwrap()
-                        );
+                        print!("Script: {:?} Args: []", &path.file_name().unwrap());
 
                         let mut script: Vec<u8> = vec![];
                         compiled_script
@@ -78,21 +68,29 @@ impl Command for TestCommand {
                         // Execute script.
                         // create a Move VM and populate it with generated modules
                         let move_vm = MoveVM::new();
-                        let mut ctx =
-                            TransactionExecutionContext::new(GasUnits::new(600), &m_runner.datastore);
+                        let mut ctx = TransactionExecutionContext::new(
+                            GasUnits::new(600),
+                            &m_runner.datastore,
+                        );
                         let gas_schedule = zero_cost_schedule();
 
                         let mut txn_data = TransactionMetadata::default();
                         txn_data.sender = cfg.address();
 
-                        let result: VMResult<()> =
-                            move_vm.execute_script(script, &gas_schedule, &mut ctx, &txn_data, vec![], vec![]);
+                        let result: VMResult<()> = move_vm.execute_script(
+                            script,
+                            &gas_schedule,
+                            &mut ctx,
+                            &txn_data,
+                            vec![],
+                            vec![],
+                        );
 
                         match result {
                             Ok(_) => status_print("OK\n", Color::Green),
                             Err(_e) => status_print("Failed\n", Color::Red),
                         }
-                    },
+                    }
                     Err(_) => {
                         panic!("Failed to load source file of test cases.");
                     }

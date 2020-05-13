@@ -13,6 +13,7 @@ pub mod compile;
 pub mod new;
 pub mod run;
 pub mod test;
+pub mod type_parser;
 
 pub trait Command {
     fn execute(&self, params: Parameter);
@@ -38,13 +39,14 @@ pub fn test_command() -> Box<dyn Command> {
     Box::new(test::TestCommand {})
 }
 
-
 fn load_genesis(cfg: &Config, runner: &mut MoveRunner) {
     println_color("Loading");
     print!("'genesis.blob' from {:?}\n", &cfg.home);
     let mut exec_cfg = ExecutionConfig::default();
     exec_cfg.genesis_file_location = PathBuf::from("genesis.blob");
-    exec_cfg.load(&RootPath::new(&cfg.home)).expect("'genesis.blob' is invalid:");
+    exec_cfg
+        .load(&RootPath::new(&cfg.home))
+        .expect("'genesis.blob' is invalid:");
 
     let tx = exec_cfg.genesis.unwrap();
     let gen_payload = tx.as_signed_user_txn().unwrap().payload();
@@ -52,16 +54,10 @@ fn load_genesis(cfg: &Config, runner: &mut MoveRunner) {
         TransactionPayload::WriteSet(cs) => {
             runner.datastore.add_write_set(cs.write_set());
             //print_all(cs);
-        },
-        TransactionPayload::Module(m) => {
-            println!("module:{:?}", m)
-        },
-        TransactionPayload::Script(s) => {
-            println!("script:{:?}", s)
-        },
-        TransactionPayload::Program => {
-            println!("unimplemented")
-        },
+        }
+        TransactionPayload::Module(m) => println!("module:{:?}", m),
+        TransactionPayload::Script(s) => println!("script:{:?}", s),
+        TransactionPayload::Program => println!("unimplemented"),
     }
 }
 
