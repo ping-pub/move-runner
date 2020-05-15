@@ -1,8 +1,12 @@
 use bytecode_verifier::verifier::VerifiedModule;
-
 use glob::glob;
-
-use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
+use crate::{
+    commands::Command,
+    config::Config,
+    Parameter,
+    println_color,
+    runner::MoveRunner    
+};
 
 pub struct BuildCommand {}
 

@@ -9,7 +9,7 @@ use functional_tests::errors::*;
 use libra_types::account_address::AccountAddress;
 use move_core_types::{
     identifier::Identifier,
-    language_storage::{StructTag, TypeTag},
+    language_storage::{ StructTag, TypeTag },
 };
 
 #[derive(Eq, PartialEq, Debug)]

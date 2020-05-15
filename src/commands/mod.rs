@@ -1,12 +1,10 @@
 use std::path::PathBuf;
 
-use libra_config::config::{ExecutionConfig, RootPath};
-use libra_types::transaction::{TransactionArgument, TransactionPayload};
+use libra_config::config::{ ExecutionConfig, RootPath };
+use libra_types::transaction::{ TransactionArgument, TransactionPayload };
 use move_vm_types::values::Value;
 
-use crate::{Parameter, println_color};
-use crate::config::Config;
-use crate::runner::MoveRunner;
+use crate::{ config::Config, Parameter, println_color, runner::MoveRunner };
 
 pub mod build;
 pub mod compile;

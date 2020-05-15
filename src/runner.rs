@@ -1,15 +1,11 @@
-use std::{
-    fs,
-    io::Write,
-    path::{Path, PathBuf},
-};
+use std::{ fs, io::Write, path::{ Path, PathBuf } };
 
-use bytecode_verifier::verifier::{VerifiedModule, VerifiedScript};
+use bytecode_verifier::verifier::{ VerifiedModule, VerifiedScript };
 use compiler::Compiler;
 use language_e2e_tests::data_store::FakeDataStore;
-use stdlib::{stdlib_modules, StdLibOptions};
+use stdlib::{ stdlib_modules, StdLibOptions };
 
-use super::config::Config;
+use crate::{ config::Config, println_color };
 
 pub struct MoveRunner {
     cfg: Config,
@@ -19,7 +15,7 @@ pub struct MoveRunner {
 
 impl MoveRunner {
     pub fn new(cfg: Config) -> Self {
-        super::println_color("Loaded");
+        println_color("Loaded");
         print!(" Current address: 0x{:?}\n", cfg.address());
         MoveRunner {
             cfg,
@@ -108,6 +104,5 @@ impl MoveRunner {
 
 fn write_output(path: &PathBuf, buf: &[u8]) {
     let mut f = fs::File::create(path).expect("Error occurs on create output file");
-    f.write_all(&buf)
-        .expect("Error occurs on writing output file");
+    f.write_all(&buf).expect("Error occurs on writing output file");
 }
