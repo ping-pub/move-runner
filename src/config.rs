@@ -1,16 +1,16 @@
-use std::{fs, path::PathBuf};
+use std::{ fs, path::PathBuf };
+use serde::{ Serialize, Deserialize };
 
-use libra_config::config::{ExecutionConfig, RootPath};
+use libra_config::config::{ ExecutionConfig, RootPath };
 use libra_crypto::{
-    ed25519::{Ed25519PrivateKey, Ed25519PublicKey},
+    ed25519::{ Ed25519PrivateKey, Ed25519PublicKey },
     traits::*,
+    hash::CryptoHash
 };
-use libra_crypto::hash::CryptoHash;
 use libra_types::{
-    account_address::AccountAddress, account_address::from_public_key, transaction::Transaction,
+    account_address::{ AccountAddress, from_public_key },
+    transaction::{ Transaction, RawTransaction, SignedTransaction }
 };
-use libra_types::transaction::{RawTransaction, SignedTransaction};
-use serde::{Deserialize, Serialize};
 use stdlib::StdLibOptions;
 use vm_genesis;
 
@@ -171,6 +171,7 @@ fn generate_keypair() -> (Ed25519PrivateKey, Ed25519PublicKey) {
     let public_key = private_key.public_key();
     (private_key, public_key)
 }
+
 
 #[test]
 fn test_generate_keypair() {

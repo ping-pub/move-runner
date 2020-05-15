@@ -1,4 +1,10 @@
-use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
+use crate::{
+    commands::Command,
+    config::Config,
+    Parameter,
+    println_color,
+    runner::MoveRunner
+};
 
 pub struct CompileCommand {}
 

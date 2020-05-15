@@ -1,18 +1,24 @@
 use std::io::Write;
+use glob::glob;
 
 use bytecode_verifier::verifier::VerifiedModule;
 use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
 use move_vm_runtime::MoveVM;
 use move_vm_state::execution_context::TransactionExecutionContext;
-use move_vm_types::gas_schedule::zero_cost_schedule;
-use move_vm_types::transaction_metadata::TransactionMetadata;
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+use move_vm_types::{
+    gas_schedule::zero_cost_schedule,
+    transaction_metadata::TransactionMetadata
+};
+use termcolor::{ Color, ColorChoice, ColorSpec, StandardStream, WriteColor };
 use vm::errors::VMResult;
 
-use glob::glob;
-
-use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
-use crate::commands::load_genesis;
+use crate::{
+    commands::{ Command, load_genesis },
+    config::Config,
+    Parameter,
+    println_color,
+    runner::MoveRunner
+};
 
 pub struct TestCommand {}
 

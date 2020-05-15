@@ -1,8 +1,6 @@
-use std::io::Write;
-use std::path::PathBuf;
-
+use std::{ io::Write, path::PathBuf };
 use structopt::StructOpt;
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+use termcolor::{ Color, ColorChoice, ColorSpec, StandardStream, WriteColor };
 
 mod commands;
 mod config;
@@ -64,15 +62,7 @@ pub enum Parameter {
 
 fn main() {
     let params = Parameter::from_args();
-
     execute(params);
-}
-
-pub fn println_color(content: &'static str) {
-    let mut stdout = StandardStream::stdout(ColorChoice::Always);
-    let _ = stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)).set_bold(true));
-    let _ = write!(&mut stdout, "{:>12} ", content);
-    let _ = stdout.reset();
 }
 
 fn execute(params: Parameter) {
@@ -86,6 +76,14 @@ fn execute(params: Parameter) {
     };
     cmd.execute(params);
 }
+
+pub fn println_color(content: &'static str) {
+    let mut stdout = StandardStream::stdout(ColorChoice::Always);
+    let _ = stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green)).set_bold(true));
+    let _ = write!(&mut stdout, "{:>12} ", content);
+    let _ = stdout.reset();
+}
+
 
 #[test]
 fn test_println() {

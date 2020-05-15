@@ -1,18 +1,30 @@
-use bytecode_verifier::verifier::VerifiedModule;
-use libra_types::transaction::{parse_as_transaction_argument, TransactionArgument};
-use move_core_types::gas_schedule::{GasAlgebra, GasUnits};
-use move_core_types::language_storage::TypeTag;
-use move_vm_runtime::MoveVM;
-use move_vm_state::execution_context::{ExecutionContext, TransactionExecutionContext};
-use move_vm_types::gas_schedule::zero_cost_schedule;
-use move_vm_types::transaction_metadata::TransactionMetadata;
-use vm::errors::VMResult;
-
 use glob::glob;
 
-use crate::{commands::Command, config::Config, Parameter, println_color, runner::MoveRunner};
-use crate::commands::{convert_txn_args, load_genesis};
-use crate::commands::type_parser::parse_type_tags;
+use bytecode_verifier::verifier::VerifiedModule;
+use libra_types::transaction::{
+    parse_as_transaction_argument, TransactionArgument
+};
+use move_core_types::{
+    gas_schedule::{ GasAlgebra, GasUnits },
+    language_storage::TypeTag
+};
+use move_vm_runtime::MoveVM;
+use move_vm_state::execution_context::{
+    ExecutionContext, TransactionExecutionContext
+};
+use move_vm_types::{
+    gas_schedule::zero_cost_schedule,
+    transaction_metadata::TransactionMetadata
+};
+use vm::errors::VMResult;
+
+use crate::{
+    commands::{ Command, convert_txn_args, load_genesis, type_parser::parse_type_tags },
+    config::Config,
+    Parameter,
+    println_color,
+    runner::MoveRunner
+};
 
 pub struct RunCommand {}
 

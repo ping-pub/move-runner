@@ -1,4 +1,4 @@
-use crate::{commands::Command, config::Config, Parameter};
+use crate::{ commands::Command, config::Config, Parameter };
 
 pub struct NewCommand {}
 
